@@ -1,0 +1,1251 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Just Tea Things - Counter System</title>
+    <style>
+        /* Full Screen Base Styles */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        body {
+            background-color: #f8f5f2;
+            color: #2a3439;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Modern Header */
+        .header {
+            background: linear-gradient(135deg, #6B8E23 0%, #556B2F 100%);
+            color: white;
+            padding: 1.2rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            z-index: 10;
+        }
+
+        .header h1 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .header p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        /* Full-height Main Content */
+        .main-content {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        /* Sidebar Navigation */
+        .nav-tabs {
+            width: 220px;
+            background-color: white;
+            border-right: 1px solid #e0e0e0;
+            display: flex;
+            flex-direction: column;
+            padding: 1rem 0;
+        }
+
+        .nav-tab {
+            padding: 1rem 1.5rem;
+            border: none;
+            background: transparent;
+            text-align: left;
+            font-size: 0.95rem;
+            color: #555;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-tab:hover {
+            background-color: #f5f5f5;
+            color: #6B8E23;
+        }
+
+        .nav-tab.active {
+            background-color: #f0f7e8;
+            color: #6B8E23;
+            border-left: 4px solid #6B8E23;
+            font-weight: 500;
+        }
+
+        /* Tab Content Area */
+        .tab-content-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 2rem;
+            background-color: #f8f5f2;
+        }
+
+        .tab-content {
+            display: none;
+            height: 100%;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* ORDER TAB */
+        .order-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            height: 100%;
+        }
+
+        @media (max-width: 1200px) {
+            .order-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .order-form-section {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            color: #555;
+            font-weight: 500;
+        }
+
+        .form-group select,
+        .form-group input {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.2s;
+            background-color: #fafafa;
+        }
+
+        .form-group select:focus,
+        .form-group input:focus {
+            outline: none;
+            border-color: #6B8E23;
+            background-color: white;
+            box-shadow: 0 0 0 3px rgba(107, 142, 35, 0.1);
+        }
+
+        /* Calculation Panel */
+        .calculation-panel {
+            background-color: #f9f9f7;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            border: 1px solid #eee;
+        }
+
+        .calculation-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.8rem;
+            padding-bottom: 0.8rem;
+            border-bottom: 1px dashed #e0e0e0;
+        }
+
+        .calculation-row:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .calculation-row.total {
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: #6B8E23;
+        }
+
+        /* Buttons */
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 1rem;
+            background-color: #6B8E23;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn:hover {
+            background-color: #5a7a1a;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* Ingredients Panel */
+        .ingredients-panel {
+            background-color: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            height: 100%;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .ingredients-panel h3 {
+            color: #6B8E23;
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .ingredients-list {
+            flex: 1;
+            padding: 1rem;
+            background-color: #fafafa;
+            border-radius: 8px;
+            border: 1px solid #eee;
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .health-benefits {
+            padding: 1rem;
+            background-color: #f0f8f0;
+            border-radius: 8px;
+            border: 1px solid #d4edda;
+            font-size: 0.9rem;
+        }
+
+        .health-benefits strong {
+            color: #2e7d32;
+        }
+
+        /* Bill Modal */
+        .bill-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+        }
+
+        .bill-modal.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .bill-modal-content {
+            background-color: white;
+            width: 90%;
+            max-width: 500px;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            transform: translateY(20px);
+            transition: transform 0.3s;
+        }
+
+        .bill-modal.show .bill-modal-content {
+            transform: translateY(0);
+        }
+
+        .bill-header {
+            background: linear-gradient(135deg, #6B8E23 0%, #556B2F 100%);
+            color: white;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .bill-header h2 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .bill-body {
+            padding: 1.5rem;
+        }
+
+        .bill-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px dashed #eee;
+        }
+
+        .bill-row:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .bill-total {
+            font-weight: 600;
+            color: #6B8E23;
+            font-size: 1.1rem;
+        }
+
+        .bill-health {
+            background-color: #f0f8f0;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1.5rem;
+            font-size: 0.9rem;
+            color: #2e7d32;
+        }
+
+        .bill-footer {
+            padding: 1.5rem;
+            background-color: #f9f9f7;
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        .bill-btn {
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            border: none;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .bill-btn.print {
+            background-color: #6B8E23;
+            color: white;
+        }
+
+        .bill-btn.print:hover {
+            background-color: #5a7a1a;
+        }
+
+        .bill-btn.next {
+            background-color: #f0f0f0;
+            color: #555;
+        }
+
+        .bill-btn.next:hover {
+            background-color: #e0e0e0;
+        }
+
+        /* MENU TAB */
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .menu-item {
+            background-color: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s;
+        }
+
+        .menu-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .menu-item-img {
+            height: 160px;
+            background-color: #f0f7e8;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 3rem;
+            color: #6B8E23;
+        }
+
+        .menu-item-content {
+            padding: 1.5rem;
+        }
+
+        .menu-item h3 {
+            color: #6B8E23;
+            margin-bottom: 0.5rem;
+            font-size: 1.2rem;
+        }
+
+        .menu-price {
+            font-weight: 600;
+            font-size: 1.3rem;
+            color: #d35400;
+            margin-bottom: 1rem;
+        }
+
+        .menu-ingredients {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 1rem;
+            line-height: 1.6;
+        }
+
+        .menu-benefits {
+            font-size: 0.9rem;
+            color: #2a3439;
+            padding-top: 1rem;
+            border-top: 1px dashed #ddd;
+        }
+
+        /* REPORTS TAB */
+        .report-filters {
+            display: flex;
+            gap: 0.8rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .report-filter-btn {
+            padding: 0.6rem 1.2rem;
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+        }
+
+        .report-filter-btn:hover {
+            background-color: #f5f5f5;
+        }
+
+        .report-filter-btn.active {
+            background-color: #6B8E23;
+            color: white;
+            border-color: #6B8E23;
+        }
+
+        .sales-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .summary-card {
+            background-color: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+            text-align: center;
+        }
+
+        .summary-card h3 {
+            font-size: 1.8rem;
+            color: #6B8E23;
+            margin-bottom: 0.5rem;
+        }
+
+        .summary-card p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .orders-table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+        }
+
+        .orders-table th,
+        .orders-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .orders-table th {
+            background-color: #6B8E23;
+            color: white;
+            font-weight: 500;
+        }
+
+        .orders-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .orders-table tr:hover {
+            background-color: #f9f9f7;
+        }
+
+        /* Notification */
+        .notification {
+            position: fixed;
+            bottom: -100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #6B8E23;
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            transition: bottom 0.3s ease;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .notification.show {
+            bottom: 2rem;
+        }
+
+        .notification-icon {
+            font-size: 1.2rem;
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .main-content {
+                flex-direction: column;
+            }
+
+            .nav-tabs {
+                width: 100%;
+                flex-direction: row;
+                overflow-x: auto;
+                padding: 0;
+                border-right: none;
+                border-bottom: 1px solid #e0e0e0;
+            }
+
+            .nav-tab {
+                padding: 1rem;
+                white-space: nowrap;
+                border-left: none;
+                border-bottom: 4px solid transparent;
+            }
+
+            .nav-tab.active {
+                border-left: none;
+                border-bottom: 4px solid #6B8E23;
+            }
+
+            .tab-content-area {
+                padding: 1.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header {
+                flex-direction: column;
+                gap: 0.5rem;
+                text-align: center;
+                padding: 1rem;
+            }
+
+            .order-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .sales-summary {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .orders-table {
+                font-size: 0.8rem;
+            }
+
+            .orders-table th,
+            .orders-table td {
+                padding: 0.8rem;
+            }
+
+            .bill-footer {
+                flex-direction: column;
+                gap: 0.8rem;
+            }
+
+            .bill-btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Modern Header -->
+    <div class="header">
+        <h1>🍵 Just Tea Things</h1>
+        <p>Quick Tea • Health Benefits • Digital Workflow</p>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="main-content">
+        <!-- Sidebar Navigation -->
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="switchTab('order')">
+                📋 New Order
+            </button>
+            <button class="nav-tab" onclick="switchTab('menu')">
+                ☕ Menu
+            </button>
+            <button class="nav-tab" onclick="switchTab('reports')">
+                📊 Reports
+            </button>
+        </div>
+
+        <!-- Tab Content Area -->
+        <div class="tab-content-area">
+            <!-- ORDER TAB -->
+            <div id="order-tab" class="tab-content active">
+                <div class="order-grid">
+                    <!-- Order Form Section -->
+                    <div class="order-form-section">
+                        <div class="form-group">
+                            <label for="tea-select">Select Tea</label>
+                            <select id="tea-select" onchange="updateIngredients()">
+                                <option value="">Choose a tea...</option>
+                                <option value="green">Green Tea - ₹15</option>
+                                <option value="black">Black Tea - ₹12</option>
+                                <option value="ginger">Ginger Tea - ₹20</option>
+                                <option value="masala">Masala Chai - ₹25</option>
+                                <option value="lemon">Lemon Tea - ₹18</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="quantity">Quantity</label>
+                            <input type="number" id="quantity" min="1" max="10" value="1" onchange="calculateTotal()">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="amount-given">Amount Given (₹)</label>
+                            <input type="number" id="amount-given" min="0" onchange="calculateTotal()">
+                        </div>
+
+                        <div class="calculation-panel">
+                            <div class="calculation-row">
+                                <span>Unit Price:</span>
+                                <span id="unit-price">₹0</span>
+                            </div>
+                            <div class="calculation-row">
+                                <span>Quantity:</span>
+                                <span id="calc-quantity">1</span>
+                            </div>
+                            <div class="calculation-row total">
+                                <span>Total:</span>
+                                <span id="total-amount">₹0</span>
+                            </div>
+                            <div class="calculation-row">
+                                <span>Amount Given:</span>
+                                <span id="given-amount">₹0</span>
+                            </div>
+                            <div class="calculation-row">
+                                <span>Return:</span>
+                                <span id="return-amount">₹0</span>
+                            </div>
+                        </div>
+
+                        <button class="btn" id="process-order" onclick="processOrder()" disabled>
+                            Process Order & Generate Bill
+                        </button>
+                    </div>
+
+                    <!-- Ingredients Panel -->
+                    <div class="ingredients-panel">
+                        <h3>🥄 Preparation Ingredients</h3>
+                        <div class="ingredients-list" id="ingredients-list">
+                            Select a tea to see ingredients...
+                        </div>
+                        <div class="health-benefits" id="health-benefits" style="display: none;">
+                            <strong>Health Benefits:</strong>
+                            <span id="benefits-text"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MENU TAB -->
+            <div id="menu-tab" class="tab-content">
+                <h2 style="color: #6B8E23; margin-bottom: 1.5rem;">Our Tea Menu</h2>
+                <div class="menu-grid">
+                    <div class="menu-item">
+                        <div class="menu-item-img">🍃</div>
+                        <div class="menu-item-content">
+                            <h3>Green Tea</h3>
+                            <div class="menu-price">₹15</div>
+                            <div class="menu-ingredients">Green tea leaves, Hot water</div>
+                            <div class="menu-benefits">Boosts metabolism, rich in antioxidants</div>
+                        </div>
+                    </div>
+                    <div class="menu-item">
+                        <div class="menu-item-img">☕</div>
+                        <div class="menu-item-content">
+                            <h3>Black Tea</h3>
+                            <div class="menu-price">₹12</div>
+                            <div class="menu-ingredients">Black tea leaves, Hot water</div>
+                            <div class="menu-benefits">Improves focus, natural energy booster</div>
+                        </div>
+                    </div>
+                    <div class="menu-item">
+                        <div class="menu-item-img">🫚</div>
+                        <div class="menu-item-content">
+                            <h3>Ginger Tea</h3>
+                            <div class="menu-price">₹20</div>
+                            <div class="menu-ingredients">Ginger, Tea leaves, Sugar, Water</div>
+                            <div class="menu-benefits">Aids digestion, relieves nausea</div>
+                        </div>
+                    </div>
+                    <div class="menu-item">
+                        <div class="menu-item-img">🌿</div>
+                        <div class="menu-item-content">
+                            <h3>Masala Chai</h3>
+                            <div class="menu-price">₹25</div>
+                            <div class="menu-ingredients">Tea leaves, Ginger, Cardamom, Cloves, Milk, Sugar</div>
+                            <div class="menu-benefits">Spicy and warming, digestion friendly</div>
+                        </div>
+                    </div>
+                    <div class="menu-item">
+                        <div class="menu-item-img">🍋</div>
+                        <div class="menu-item-content">
+                            <h3>Lemon Tea</h3>
+                            <div class="menu-price">₹18</div>
+                            <div class="menu-ingredients">Lemon juice, Tea leaves, Sugar, Water</div>
+                            <div class="menu-benefits">Detoxifying, refreshing and vitamin C rich</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- REPORTS TAB -->
+            <div id="reports-tab" class="tab-content">
+                <h2 style="color: #6B8E23; margin-bottom: 1.5rem;">Sales Reports</h2>
+
+                <div class="report-filters">
+                    <button class="report-filter-btn active" onclick="filterReport('today')">Today</button>
+                    <button class="report-filter-btn" onclick="filterReport('yesterday')">Yesterday</button>
+                    <button class="report-filter-btn" onclick="filterReport('week')">This Week</button>
+                    <button class="report-filter-btn" onclick="filterReport('month')">This Month</button>
+                    <button class="report-filter-btn" onclick="downloadReport()">📥 Download Excel</button>
+                </div>
+
+                <div class="sales-summary">
+                    <div class="summary-card">
+                        <h3 id="total-orders">24</h3>
+                        <p>Total Orders</p>
+                    </div>
+                    <div class="summary-card">
+                        <h3 id="total-revenue">₹480</h3>
+                        <p>Total Revenue</p>
+                    </div>
+                    <div class="summary-card">
+                        <h3 id="avg-order">₹20</h3>
+                        <p>Average Order</p>
+                    </div>
+                    <div class="summary-card">
+                        <h3 id="top-tea">Masala Chai</h3>
+                        <p>Top Selling Tea</p>
+                    </div>
+                </div>
+
+                <table class="orders-table">
+                    <thead>
+                        <tr>
+                            <th>Bill No</th>
+                            <th>Tea</th>
+                            <th>Qty</th>
+                            <th>Unit Price</th>
+                            <th>Total</th>
+                            <th>Given</th>
+                            <th>Return</th>
+                            <th>Time</th>
+                        </tr>
+                    </thead>
+                    <tbody id="orders-tbody">
+                        <tr>
+                            <td>JTT001</td>
+                            <td>Masala Chai</td>
+                            <td>2</td>
+                            <td>₹25</td>
+                            <td>₹50</td>
+                            <td>₹50</td>
+                            <td>₹0</td>
+                            <td>10:30 AM</td>
+                        </tr>
+                        <tr>
+                            <td>JTT002</td>
+                            <td>Green Tea</td>
+                            <td>1</td>
+                            <td>₹15</td>
+                            <td>₹15</td>
+                            <td>₹20</td>
+                            <td>₹5</td>
+                            <td>10:45 AM</td>
+                        </tr>
+                        <tr>
+                            <td>JTT003</td>
+                            <td>Ginger Tea</td>
+                            <td>1</td>
+                            <td>₹20</td>
+                            <td>₹20</td>
+                            <td>₹20</td>
+                            <td>₹0</td>
+                            <td>11:00 AM</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bill Modal -->
+    <div class="bill-modal" id="bill-modal">
+        <div class="bill-modal-content">
+            <div class="bill-header">
+                <h2>🍵 JUST TEA THINGS</h2>
+                <p>Quick Tea • Health Benefits</p>
+            </div>
+            <div class="bill-body" id="bill-content">
+                <!-- Bill content will be inserted here -->
+            </div>
+            <div class="bill-footer">
+                <button class="bill-btn print" onclick="printBill()">🖨️ Print Bill</button>
+                <button class="bill-btn next" onclick="resetForm()">✅ Next Order</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification -->
+    <div class="notification" id="notification">
+        <span class="notification-icon">✓</span>
+        <span id="notification-text">Order processed successfully!</span>
+    </div>
+
+    <script>
+        // Tea data
+        const teaData = {
+            green: {
+                name: 'Green Tea',
+                price: 15,
+                ingredients: 'Green tea leaves, Hot water',
+                benefits: 'Boosts metabolism, rich in antioxidants'
+            },
+            black: {
+                name: 'Black Tea',
+                price: 12,
+                ingredients: 'Black tea leaves, Hot water',
+                benefits: 'Improves focus, natural energy booster'
+            },
+            ginger: {
+                name: 'Ginger Tea',
+                price: 20,
+                ingredients: 'Ginger, Tea leaves, Sugar, Water',
+                benefits: 'Aids digestion, relieves nausea'
+            },
+            masala: {
+                name: 'Masala Chai',
+                price: 25,
+                ingredients: 'Tea leaves, Ginger, Cardamom, Cloves, Milk, Sugar',
+                benefits: 'Spicy and warming, digestion friendly'
+            },
+            lemon: {
+                name: 'Lemon Tea',
+                price: 18,
+                ingredients: 'Lemon juice, Tea leaves, Sugar, Water',
+                benefits: 'Detoxifying, refreshing and vitamin C rich'
+            }
+        };
+
+        // Store orders in memory
+        let dailyOrders = [];
+        let billCounter = 1;
+
+        // Tab switching
+        function switchTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // Show selected tab
+            document.getElementById(tabName + '-tab').classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // Update ingredients when tea is selected
+        function updateIngredients() {
+            const selectedTea = document.getElementById('tea-select').value;
+            const ingredientsList = document.getElementById('ingredients-list');
+            const healthBenefits = document.getElementById('health-benefits');
+            const benefitsText = document.getElementById('benefits-text');
+
+            if (selectedTea && teaData[selectedTea]) {
+                const tea = teaData[selectedTea];
+                ingredientsList.innerHTML = `<strong>${tea.ingredients}</strong>`;
+                benefitsText.textContent = tea.benefits;
+                healthBenefits.style.display = 'block';
+                calculateTotal();
+            } else {
+                ingredientsList.textContent = 'Select a tea to see ingredients...';
+                healthBenefits.style.display = 'none';
+                resetCalculation();
+            }
+        }
+
+        // Calculate total and return amount
+        function calculateTotal() {
+            const selectedTea = document.getElementById('tea-select').value;
+            const quantity = parseInt(document.getElementById('quantity').value) || 1;
+            const amountGiven = parseFloat(document.getElementById('amount-given').value) || 0;
+
+            if (selectedTea && teaData[selectedTea]) {
+                const tea = teaData[selectedTea];
+                const unitPrice = tea.price;
+                const total = unitPrice * quantity;
+                const returnAmount = Math.max(0, amountGiven - total);
+
+                // Update display
+                document.getElementById('unit-price').textContent = `₹${unitPrice}`;
+                document.getElementById('calc-quantity').textContent = quantity;
+                document.getElementById('total-amount').textContent = `₹${total}`;
+                document.getElementById('given-amount').textContent = `₹${amountGiven}`;
+                document.getElementById('return-amount').textContent = `₹${returnAmount}`;
+
+                // Enable/disable process button
+                const processBtn = document.getElementById('process-order');
+                if (amountGiven >= total && total > 0) {
+                    processBtn.disabled = false;
+                } else {
+                    processBtn.disabled = true;
+                }
+            }
+        }
+
+        // Reset calculation display
+        function resetCalculation() {
+            document.getElementById('unit-price').textContent = '₹0';
+            document.getElementById('calc-quantity').textContent = '1';
+            document.getElementById('total-amount').textContent = '₹0';
+            document.getElementById('given-amount').textContent = '₹0';
+            document.getElementById('return-amount').textContent = '₹0';
+            document.getElementById('process-order').disabled = true;
+        }
+
+        // Process order and generate bill
+        function processOrder() {
+            const selectedTea = document.getElementById('tea-select').value;
+            const quantity = parseInt(document.getElementById('quantity').value);
+            const amountGiven = parseFloat(document.getElementById('amount-given').value);
+
+            if (selectedTea && teaData[selectedTea]) {
+                const tea = teaData[selectedTea];
+                const total = tea.price * quantity;
+                const returnAmount = amountGiven - total;
+                const billNo = `JTT${String(billCounter).padStart(3, '0')}`;
+                const timestamp = new Date().toLocaleString();
+
+                // Create order record
+                const order = {
+                    billNo,
+                    tea: tea.name,
+                    quantity,
+                    unitPrice: tea.price,
+                    total,
+                    amountGiven,
+                    returnAmount,
+                    benefits: tea.benefits,
+                    timestamp
+                };
+
+                // Add to daily orders
+                dailyOrders.push(order);
+                billCounter++;
+
+                // Generate bill preview
+                generateBillPreview(order);
+
+                // Show notification
+                showNotification('Order processed successfully! Bill generated.');
+
+                // Update reports if on reports tab
+                updateReportsDisplay();
+            }
+        }
+
+        // Generate bill preview
+        function generateBillPreview(order) {
+            const billContent = document.getElementById('bill-content');
+            const billModal = document.getElementById('bill-modal');
+
+            billContent.innerHTML = `
+                <div class="bill-row">
+                    <span>Bill No:</span>
+                    <span>${order.billNo}</span>
+                </div>
+                <div class="bill-row">
+                    <span>Date:</span>
+                    <span>${new Date().toLocaleDateString()}</span>
+                </div>
+                <div class="bill-row">
+                    <span>Time:</span>
+                    <span>${new Date().toLocaleTimeString()}</span>
+                </div>
+                
+                <div class="bill-row" style="margin-top: 1.5rem;">
+                    <span><strong>${order.tea}</strong></span>
+                    <span></span>
+                </div>
+                <div class="bill-row">
+                    <span>Qty: ${order.quantity} × ₹${order.unitPrice}</span>
+                    <span class="bill-total">₹${order.total}</span>
+                </div>
+                
+                <div class="bill-row" style="margin-top: 1.5rem;">
+                    <span>Amount Given:</span>
+                    <span>₹${order.amountGiven}</span>
+                </div>
+                <div class="bill-row">
+                    <span>Return:</span>
+                    <span>₹${order.returnAmount}</span>
+                </div>
+                
+                <div class="bill-health">
+                    <strong>Health Benefit:</strong><br>
+                    ${order.benefits}
+                </div>
+            `;
+
+            billModal.classList.add('show');
+        }
+
+        // Close bill modal
+        function closeBillModal() {
+            document.getElementById('bill-modal').classList.remove('show');
+        }
+
+        // Reset form after order
+        function resetForm() {
+            document.getElementById('tea-select').value = '';
+            document.getElementById('quantity').value = '1';
+            document.getElementById('amount-given').value = '';
+            updateIngredients();
+            closeBillModal();
+        }
+
+        // Show notification
+        function showNotification(message) {
+            const notification = document.getElementById('notification');
+            const notificationText = document.getElementById('notification-text');
+            notificationText.textContent = message;
+            notification.classList.add('show');
+
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // Update reports display
+        function updateReportsDisplay() {
+            if (dailyOrders.length === 0) return;
+
+            const totalOrders = dailyOrders.length;
+            const totalRevenue = dailyOrders.reduce((sum, order) => sum + order.total, 0);
+            const avgOrder = Math.round(totalRevenue / totalOrders);
+
+            // Count tea types
+            const teaCounts = {};
+            dailyOrders.forEach(order => {
+                teaCounts[order.tea] = (teaCounts[order.tea] || 0) + order.quantity;
+            });
+            const topTea = Object.keys(teaCounts).reduce((a, b) => teaCounts[a] > teaCounts[b] ? a : b);
+
+            // Update summary cards
+            document.getElementById('total-orders').textContent = totalOrders;
+            document.getElementById('total-revenue').textContent = `₹${totalRevenue}`;
+            document.getElementById('avg-order').textContent = `₹${avgOrder}`;
+            document.getElementById('top-tea').textContent = topTea;
+
+            // Update orders table
+            const tbody = document.getElementById('orders-tbody');
+            tbody.innerHTML = dailyOrders.map(order => `
+                <tr>
+                    <td>${order.billNo}</td>
+                    <td>${order.tea}</td>
+                    <td>${order.quantity}</td>
+                    <td>₹${order.unitPrice}</td>
+                    <td>₹${order.total}</td>
+                    <td>₹${order.amountGiven}</td>
+                    <td>₹${order.returnAmount}</td>
+                    <td>${new Date(order.timestamp).toLocaleTimeString()}</td>
+                </tr>
+            `).join('');
+        }
+
+        // Filter reports (placeholder functionality)
+        function filterReport(period) {
+            // Remove active class from all buttons
+            document.querySelectorAll('.report-filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            // Add active class to clicked button
+            event.target.classList.add('active');
+
+            showNotification(`Filtered reports for: ${period}`);
+        }
+
+        // Download report (placeholder functionality)
+        function downloadReport() {
+            if (dailyOrders.length === 0) {
+                showNotification('No orders to download');
+                return;
+            }
+
+            // Create CSV content
+            const headers = ['Bill No', 'Tea', 'Qty', 'Unit Price', 'Total', 'Amount Given', 'Return', 'Benefits', 'Timestamp'];
+            const csvContent = [
+                headers.join(','),
+                ...dailyOrders.map(order => [
+                    order.billNo,
+                    `"${order.tea}"`,
+                    order.quantity,
+                    order.unitPrice,
+                    order.total,
+                    order.amountGiven,
+                    order.returnAmount,
+                    `"${order.benefits}"`,
+                    `"${order.timestamp}"`
+                ].join(','))
+            ].join('\n');
+
+            // Create and download file
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `just-tea-things-${new Date().toISOString().split('T')[0]}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+
+            showNotification('Report downloaded successfully!');
+        }
+
+        // Initialize the system
+        document.addEventListener('DOMContentLoaded', function () {
+            resetCalculation();
+            updateIngredients();
+        });
+
+        // Print bill functionality
+        function printBill() {
+            const billContent = document.getElementById('bill-content').innerHTML;
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(`
+                <html>
+                <head>
+                    <title>Just Tea Things - Bill</title>
+                    <style>
+                        body { 
+                            font-family: 'Courier New', monospace; 
+                            font-size: 14px; 
+                            margin: 20px; 
+                            color: #333;
+                        }
+                        .bill-header {
+                            text-align: center;
+                            margin-bottom: 15px;
+                        }
+                        .bill-header h2 {
+                            font-size: 1.5rem;
+                            margin-bottom: 5px;
+                            color: #6B8E23;
+                        }
+                        .bill-row {
+                            display: flex;
+                            justify-content: space-between;
+                            margin-bottom: 8px;
+                            padding-bottom: 8px;
+                            border-bottom: 1px dashed #ddd;
+                        }
+                        .bill-total {
+                            font-weight: bold;
+                            color: #6B8E23;
+                        }
+                        .bill-health {
+                            background-color: #f0f8f0;
+                            padding: 10px;
+                            border-radius: 5px;
+                            margin-top: 15px;
+                            font-size: 12px;
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="bill-header">
+                        <h2>🍵 JUST TEA THINGS</h2>
+                        <p>Quick Tea • Health Benefits</p>
+                    </div>
+                    ${billContent}
+                    <div style="text-align: center; margin-top: 20px; font-size: 12px;">
+                        Thank you! Come back for more healthy tea! 🌿
+                    </div>
+                </body>
+                </html>
+            `);
+            printWindow.document.close();
+            printWindow.print();
+        }
+    </script>
+</body>
+
+</html>
